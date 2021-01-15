@@ -1,0 +1,51 @@
+.include "m32def.inc"
+
+.ORG 0
+ RJMP main
+
+
+.ORG $100
+ main:
+ 	LDI R16,$10
+	LDI R17,$A6
+	CLR R18
+	LDI R19,$FF
+	
+	OUT DDRA,R19
+	OUT UCSRA,R18
+	OUT UCSRB,R16
+	OUT UCSRC,R17
+
+	LDI R21,$02
+	OUT UBRRH,R18
+	OUT UBRRL,R21
+
+;	LDI R20,$01
+
+;	OUT DDRB,R19
+;	OUT PORTB,R18
+
+	SEI
+
+wait:
+	SBIS UCSRA,7
+	RJMP wait
+
+	IN R16,UCSRA
+	IN R17,UCSRB
+	IN R18,UDR
+
+	ANDI R16,$1C
+	CPI R16,$00
+
+	BREQ noerr
+	RJMP err
+noerr:
+	OUT PORTA,R18
+;	IN R22,PORTB
+;	EOR R22,R20
+;	OUT PORTB,R22
+
+	RETI
+err:
+	RETI
